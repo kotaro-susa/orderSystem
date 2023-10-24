@@ -12,7 +12,7 @@ const DashBoard = () => {
       <div className="flex justify-end m-3">
         <Button />
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-8">
         <Orders />
       </div>
     </>

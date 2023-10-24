@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useReducer, useState } from "react";
 
 type ProductType = {
@@ -19,24 +20,13 @@ type OrderDetail = {
   amount: number;
 };
 
-type AllOrder = {
-  customerName: string;
-  shippingAddress: string;
-  orderDate: string;
-  totalAmount: number;
-};
-
-type ProductArray = {
-  products: ProductType[];
-};
-
 const Products = () => {
   const [orderList, setOrderList] = useState<OrderDetail[] | null>(null);
-  const [postList, setPostList] = useState<OrderDetail[] | null>(orderList);
   const [orderName, setOrderName] = useState<string>("");
   const [shippingAddress, setShippingAddress] = useState<string>("");
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [error, setError] = useState<string>("");
+  const router = useRouter();
 
   const handleQuantityIncrease = (id: string) => {
     setOrderList((prevOrderList) =>
@@ -55,10 +45,6 @@ const Products = () => {
       })
     );
   };
-
-  useEffect(() => {
-    console.log(totalAmount);
-  }, [totalAmount]);
 
   const handleQuantityDecrease = (id: String) => {
     setOrderList((prevOrderList) =>
@@ -93,23 +79,25 @@ const Products = () => {
           shippingAddress,
           orderDate,
           totalAmount,
+          status: "発送準備中",
         }),
       });
       if (NewOrderRes.ok) {
         NewOrderRes.json() // JSONデータを非同期に取得するPromiseを返す
           .then((res) => {
-            setOrderList((prevOrderList) => {
-              prevOrderList!.map((product) => {
-                if (product.quantity > 0) {
-                  return { ...product, orderId: res.newOrder._id };
-                }
+            const NewOrderList = orderList!.filter(
+              (product) => product.quantity > 0
+            );
+            NewOrderList.forEach(async (product) => {
+              const NewOrderRes = await fetch(`api/detailorder`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...product, orderId: res.newOrder._id }),
               });
-              return null;
             });
           });
       }
-      try {
-      } catch {}
+      router.push("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -124,7 +112,7 @@ const Products = () => {
         if (res.ok) {
           const data = await res.json();
           if (data.products) {
-            const SingleOrders = data.products?.map((product: ProductType) => ({
+            const SingleOrders = data.products!.map((product: ProductType) => ({
               quantity: 0,
               name: product.productName,
               price: product.price,
@@ -148,6 +136,7 @@ const Products = () => {
       <div className="flex justify-end">合計:{totalAmount}</div>
       <div>注文者名</div>
       <input
+        id="orderName"
         type="text"
         placeholder="注文者名"
         className="border border-gray-200 p-2 mt-2 mb-4"
@@ -156,6 +145,7 @@ const Products = () => {
 
       <div>住所</div>
       <input
+        id="orderAddress"
         type="text"
         placeholder="住所"
         className="border border-gray-200 p-2 mt-2 mb-4 w-2/4"

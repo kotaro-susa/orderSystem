@@ -1,28 +1,52 @@
+
+import { useRouter } from "next/navigation";
 import React from "react";
 
-const Order = () => {
+type AllOrdersFromMongo = {
+  createdAt: string;
+  customerName: string;
+  orderDate: string;
+  shippingAddress: string;
+  status: string;
+  totalAmount: number;
+  updatedAt: string;
+  __v: number;
+  _id: string;
+};
+
+type OrderProps = {
+  order: AllOrdersFromMongo;
+};
+
+const Order = ({ order }: OrderProps) => {
+  const router = useRouter();
+  const originalDate = new Date(order.orderDate);
+  const year = originalDate.getFullYear();
+  const month = originalDate.getMonth() + 1;
+  const day = originalDate.getDate();
+
+  const formattedDate = `${year}/${month}/${day}`;
+
+  const handleSubmit =  (id: string) => {
+    router.push(`/dashboard/${id}`);
+  };
   return (
     <tbody>
-      <tr>
-        <td>0001</td>
-        <td>山下</td>
-        <td>東京都府中市</td>
-        <td>¥123000</td>
-        <td>出荷準備中</td>
-      </tr>
-      <tr>
-        <td>0002</td>
-        <td>田中</td>
-        <td>東京都府中市</td>
-        <td>¥123000</td>
-        <td>出荷準備中</td>
-      </tr>
-      <tr>
-        <td>0003</td>
-        <td>五十嵐</td>
-        <td>東京都府中市</td>
-        <td>¥123000</td>
-        <td>出荷準備中</td>
+      <tr className="text-center">
+        <td className="pb-2">{formattedDate}</td>
+        <td className="pb-2">{order._id}</td>
+        <td className="pb-2">{order.customerName}</td>
+        <td className="pb-2">{order.shippingAddress}</td>
+        <td className="pb-2">{order.totalAmount}</td>
+        <td className="pb-2">{order.status}</td>
+        <td className="pb-2">
+          <button
+            className="border-gray-700 text-base text-white bg-gray-700 rounded-sm p-1 font-bold"
+            onClick={() => handleSubmit(order._id)}
+          >
+            詳細
+          </button>
+        </td>
       </tr>
     </tbody>
   );
