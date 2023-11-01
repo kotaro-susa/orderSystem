@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Order from "./Order";
 
-type AllOrders = {
+export type AllOrders = {
   createdAt: string;
   customerName: string;
   orderDate: string;
@@ -48,6 +48,7 @@ const Orders = () => {
             <th className="w-1/7">合計金額</th>
             <th className="w-1/7">ステータス</th>
             <th className="w-1/7">詳細</th>
+            <th className="w-1/7">削除</th>
           </tr>
         </thead>
         {allOrders &&

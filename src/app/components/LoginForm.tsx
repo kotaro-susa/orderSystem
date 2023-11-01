@@ -1,5 +1,5 @@
 "use client";
-import { SignInResponse, signIn } from "next-auth/react";
+import { SignInResponse, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -10,7 +10,7 @@ const LoginForm = () => {
   const [error, setError] = useState("");
 
   const router = useRouter();
-
+  const { data: session } = useSession();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -61,6 +61,7 @@ const LoginForm = () => {
             <span className="underline">登録する</span>
           </Link>
         </form>
+        <button onClick={() => signIn("google")}>Googleでログインする</button>
       </div>
     </div>
   );

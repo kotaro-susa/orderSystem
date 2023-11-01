@@ -1,21 +1,9 @@
-
 import { useRouter } from "next/navigation";
-import React from "react";
-
-type AllOrdersFromMongo = {
-  createdAt: string;
-  customerName: string;
-  orderDate: string;
-  shippingAddress: string;
-  status: string;
-  totalAmount: number;
-  updatedAt: string;
-  __v: number;
-  _id: string;
-};
+import React, { useEffect, useState } from "react";
+import { AllOrders } from "./Orders";
 
 type OrderProps = {
-  order: AllOrdersFromMongo;
+  order: AllOrders;
 };
 
 const Order = ({ order }: OrderProps) => {
@@ -27,8 +15,29 @@ const Order = ({ order }: OrderProps) => {
 
   const formattedDate = `${year}/${month}/${day}`;
 
-  const handleSubmit =  (id: string) => {
+  const handleSubmit = (id: string) => {
     router.push(`/dashboard/${id}`);
+  };
+  const handleDelete = async (id: string) => {
+    try {
+      const OrderDeleteRes = await fetch(`../api/order/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const OrderDetailDeleteRes = await fetch(`../api/detailorder/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (OrderDeleteRes.ok && OrderDetailDeleteRes.ok) {
+        router.push("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <tbody>
@@ -45,6 +54,14 @@ const Order = ({ order }: OrderProps) => {
             onClick={() => handleSubmit(order._id)}
           >
             詳細
+          </button>
+        </td>
+        <td className="pb-2">
+          <button
+            className="border-red-700 text-base text-white bg-red-700 rounded-sm p-1 font-bold"
+            onClick={() => handleDelete(order._id)}
+          >
+            削除
           </button>
         </td>
       </tr>

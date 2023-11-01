@@ -1,10 +1,16 @@
 import { connectMongoDB } from "@/app/lib/mongodb";
 import User from "@/app/models/user";
 import { NextApiHandler } from "next";
-import { SessionStrategy } from "next-auth";
+import { NextAuthOptions, SessionStrategy } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import GoogleProvider from "next-auth/providers/google";
+
+type ClientType = {
+  clientId: string;
+  clientSecret: string;
+};
 
 export const authOptions = {
   providers: [
@@ -31,6 +37,11 @@ export const authOptions = {
         }
       },
     }),
+    GoogleProvider({
+      name: "goo",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    } as ClientType),
   ],
   session: {
     strategy: "jwt" as SessionStrategy,

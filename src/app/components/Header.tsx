@@ -7,7 +7,7 @@ const Header = () => {
   const { data: session } = useSession();
   return (
     <div className="flex flex-row justify-between w-full bg-slate-700 items-center p-2">
-      <div className="text-3xl text-white font-bold">Alternative-Force</div>
+      <div className="text-3xl text-white font-bold">簡易受注システム</div>
       <div className="flex flex-row items-center">
         <div className="text-white font-bold text-1xl mr-4">
           ユーザー名 : {session?.user?.name}
